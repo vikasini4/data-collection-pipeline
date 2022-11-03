@@ -28,16 +28,10 @@ class webscraper():
             By.XPATH, "//button[@aria-label='Accept all']")
 
         accept_button.click()   
-        #print(accept_button)
+  
 
     def scroll_to_bottom(self):
-         #print('\nScrolling to the bottom of the page right now, then clicking on \'next page\'.')
-         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-         #time.sleep(3)
-         #self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-         #time.sleep(3)
-         # Get scroll height after first time page load
-        # Get scroll height after first time page load
+        
         last_height = self.driver.execute_script("return document.body.scrollHeight")
         while True:
             # Scroll down to bottom
