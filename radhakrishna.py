@@ -7,31 +7,40 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from datetime import date, datetime
 import json
-import os
-from base64 import b64decode
-from pathlib import Path
-import requests
+import os 
+import urllib.request
+
 
 class webscraper():
     def __init__(self):
+        '''
+        This class is used to scrape a website and extract links and images.
+        The website chosen for the task is Google, therefore it will scrap Radhakrishna details.
+        '''
         self.driver = webdriver.Chrome()
         self.date = str(date.today())
         self.hour = datetime.now()
         self.current_time = str(self.hour.strftime("%H:%M"))
         self.image_number = 0
+        self.all_links = []
+        self.page = 0
+        
     
     def search(self, query): 
         self.driver.get(f"https://www.google.com/search?q={query}&tbm=isch")
       
     def accept_form(self):
-        accept_button = self.driver.find_element(
-            By.XPATH, "//button[@aria-label='Accept all']")
-
-        accept_button.click()   
-  
+        '''A Method that accepts the cookies.'''
+        try:
+         accept_button = self.driver.find_element(By.XPATH, value=
+              '//button[@aria-label="Accept all"]')
+         accept_button.click()
+         time.sleep(2)
+        except:
+            pass
 
     def scroll_to_bottom(self):
-        
+     
         last_height = self.driver.execute_script("return document.body.scrollHeight")
         while True:
             # Scroll down to bottom
@@ -49,6 +58,7 @@ class webscraper():
             
                
     def get_all_links(self, query):
+        '''A method that creates a list of links to the images to scrape'''
         self.search(query)
         self.accept_form()
         self.scroll_to_bottom()
@@ -62,7 +72,7 @@ class webscraper():
                 self.image_id = 'image_' + str(self.image_number)
                 a_tag = element.find_element(By.XPATH,'./a[1]')
                 a_tag.send_keys(Keys.ENTER)
-           #time.sleep(3)
+         
                 link = a_tag.get_attribute('href')
                 print(link)
                 all_links.append({"ID": self.image_id,"link": link,"Date scraped": self.date,"Time scraped": self.current_time})
@@ -73,53 +83,31 @@ class webscraper():
         path1 = os.path.join('/Users/vikasiniperemakumar/Desktop/AiCore/Data_Collection_Pipeline/raw_data')
         os.mkdir(path1)
         with open(f'/Users/vikasiniperemakumar/Desktop/AiCore/Data_Collection_Pipeline/raw_data/data.json','w') as fp:
-            json.dump(all_links, fp)
-
+            json.dump(all_links, fp)      
+       
     def get_all_images(self, query):
+        '''A method that gets all images and stores it in a folder.'''
         self.search(query)
         self.accept_form()
         self.scroll_to_bottom()
-       
-        containers = self.driver.find_element(By.ID, "islrg")
-        image_containers = containers.find_elements(By.XPATH, "div/div")
-    
-        "/a/div/img"
-        for img_container in image_containers:
-            title = img_container.find_element(
-                By.TAG_NAME,"h3").text.lower().replace(' ','-')
-            print(title)
-            img = img_container.find_element(By.XPATH, "a/div/img")
-            img_src = img.get_attribute('src')
-            query_dir = f"images/{query}"
-            Path(query_dir).mkdir(parents=True, exist_ok=True)
-            fp = f"{query_dir}/{title}.jpeg"
-            if "data:image/jpeg;base64," in img_src:
-                img_data = self.get_img_bytes_from_b64(img_src)
-            else:
-                img_data = self.get_img_bytes_from_url(img_src)
-            with open(fp, 'wb') as handler:
-                handler.write(img_data)
+        self.get_all_links(query)
 
-    def get_img_bytes_from_url(self, img_url):
-        return requests.get(img_url).content
-       
+        imgResults = self.driver.find_elements_by_xpath("//img[contains(@class,'Q4LuWd')]")
+
+        src = []
+        for img in imgResults:
+            src.append(img.get_attribute('src'))
+
+        for i in range(10):
+            urllib.request.urlretrieve(str(src[i]),"sample_images/radhakrishna{}.jpg".format(i))
+            
     
-    def get_img_bytes_from_b64(self, b64_string):
-        b64_string = b64_string.replace('data:image/jpeg;base64,', '')
-        b64_bytes = b64decode(b64_string)
-        print(b64_bytes)
-        return b64_bytes
+
+
 
 scraper = webscraper()
 query = "radhakrishna"
-scraper.get_all_links(query)
 scraper.get_all_images(query)
-scraper.get_img_bytes_from_url()
-scraper.get_img_bytes_from_b64()
-
-
-
-
 
 
 
