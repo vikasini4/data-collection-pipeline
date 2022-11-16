@@ -7,3 +7,6 @@ Milestone 4:
 
 I have retrieved the data which is to get a list of links of the images and get images stored in a folder.
 
+Milestone 5:
+
+In this part, I created unit tests for my scraper using unittest, for each of methods of my webscraper() class.
