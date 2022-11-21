@@ -25,7 +25,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: /Users/vikasiniperemakumar/Desktop/AiCore/Data_Collection_Pipeline
           file: Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rk-image:latest
