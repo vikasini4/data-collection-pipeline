@@ -25,6 +25,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v2
         with:
-          file: Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rk-image:latest
