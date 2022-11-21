@@ -26,6 +26,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          push: true
           file: ./Dockerfile
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rk-image:latest
+          push: true
+          tags: vikasini9/rk-image:latest
