@@ -7,7 +7,7 @@ on:
       
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - 
         name: Checkout 
@@ -27,4 +27,4 @@ jobs:
         with:
           file: Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}data-collection-pipeline/rk-image:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/rk-image:latest
