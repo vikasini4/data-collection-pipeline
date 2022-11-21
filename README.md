@@ -14,3 +14,9 @@ In this part, I created unit tests for my scraper using unittest, for each of me
 Milestone 6:
 
 I had to create a Dockerfile build a scraper image locally. Once the image is built, the image worked perfectly after running it, and then was pushed to the DockerHub.
+
+Milestone 7:
+
+Two github secrets, DOCKER HUB USERNAME and DOCKER HUB ACCESS TOKEN, had to be created in order to complete this section. Each of them have a personal access token generated on DockerHub as well as my DockerHub user ID. 
+
+I could then use GitHub actions to put up a CI/CD pipeline. A GitHub action was created to push to the main branch of your repository.
