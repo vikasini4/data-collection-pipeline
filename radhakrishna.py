@@ -9,7 +9,8 @@ from datetime import date, datetime
 import json
 import os 
 import urllib.request
-
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
 class webscraper():
     def __init__(self):
@@ -17,14 +18,20 @@ class webscraper():
         This class is used to scrape a website and extract links and images.
         The website chosen for the task is Google, therefore it will scrap Radhakrishna details.
         '''
-        self.driver = webdriver.Chrome()
         self.date = str(date.today())
         self.hour = datetime.now()
         self.current_time = str(self.hour.strftime("%H:%M"))
         self.image_number = 0
         self.all_links = []
         self.page = 0
-        
+        chromeOptions = Options()
+        chromeOptions.add_argument('--headless')
+        #self.driver = webdriver.Chrome(options=chromeOptions)
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-gpu")
+        self.driver = webdriver.Chrome(options=chrome_options)
     
     def search(self, query): 
         self.driver.get(f"https://www.google.com/search?q={query}&tbm=isch")
@@ -35,9 +42,13 @@ class webscraper():
          accept_button = self.driver.find_element(By.XPATH, value=
               '//button[@aria-label="Accept all"]')
          accept_button.click()
-         time.sleep(2)
+         WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, '//*[@id="onetrust-accept-btn-handler"]')))
+         #time.sleep(2)
         except:
             pass
+
+  
+        #print(accept_button)
 
     def scroll_to_bottom(self):
      
@@ -52,7 +63,7 @@ class webscraper():
             if new_height == last_height:
                 try:
                     WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, "//input[@value='Show more results']"))).click()
-                except TimeoutException:
+                except:
                     break
             last_height = new_height
             
@@ -72,11 +83,11 @@ class webscraper():
                 self.image_id = 'image_' + str(self.image_number)
                 a_tag = element.find_element(By.XPATH,'./a[1]')
                 a_tag.send_keys(Keys.ENTER)
-         
+           #time.sleep(3)
                 link = a_tag.get_attribute('href')
-                print(link)
+                #print(link)
                 all_links.append({"ID": self.image_id,"link": link,"Date scraped": self.date,"Time scraped": self.current_time})
-                print(all_links)
+                #print(all_links)
             except:
                 pass
         
@@ -90,7 +101,7 @@ class webscraper():
         self.search(query)
         self.accept_form()
         self.scroll_to_bottom()
-        self.get_all_links(query)
+        #self.get_all_links(query)
 
         imgResults = self.driver.find_elements_by_xpath("//img[contains(@class,'Q4LuWd')]")
 
@@ -98,16 +109,23 @@ class webscraper():
         for img in imgResults:
             src.append(img.get_attribute('src'))
 
-        for i in range(10):
-            urllib.request.urlretrieve(str(src[i]),"sample_images/radhakrishna{}.jpg".format(i))
-            
+        for i in range(len(src)):
+            try:
+             urllib.request.urlretrieve(str(src[i]),"sample_images/radhakrishna{}.jpg".format(i))
+            except:
+                pass
     
-
-
-
+    def run_scraper(self, query):
+        self.search(query) 
+        self.accept_form()
+        self.scroll_to_bottom()
+        self.get_all_links(query)
+        self.get_all_images(query)    
+    
 scraper = webscraper()
 query = "radhakrishna"
-scraper.get_all_images(query)
+scraper.run_scraper(query)
+
 
 
 
